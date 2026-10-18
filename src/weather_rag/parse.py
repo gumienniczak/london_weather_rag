@@ -27,6 +27,11 @@ class HourForecast(BaseModel):
     preciptype: list[str] = Field(default_factory=list)
     conditions: str | None = None
 
+    @field_validator("preciptype", mode="before")
+    @classmethod
+    def _none_to_empty_list(cls, value: object) -> object:
+        return [] if value is None else value
+
 
 class DayForecast(BaseModel):
     model_config = ConfigDict(frozen=True, extra="ignore", populate_by_name=True)
@@ -53,11 +58,6 @@ class DayForecast(BaseModel):
     @classmethod
     def _default_conditions(cls, value: object) -> object:
         return "Unknown" if value in (None, "") else value
-
-    @field_validator("preciptype", mode="before")
-    @classmethod
-    def _none_to_empty_list(cls, value: object) -> object:
-        return [] if value is None else value
 
     @field_validator("sunrise", "sunset", mode="before")
     @classmethod
