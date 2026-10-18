@@ -287,8 +287,15 @@ class Retriever:
     def _matching_guides(self, question: str) -> list[Chunk]:
         if self._guide_index is None:
             return []
-        scores = self._guide_index.get_scores(tokenize(question))
-        ranked = sorted(
-            zip(scores, self.guide_chunks, strict=True), key=lambda pair: -float(pair[0])
-        )
-        return [chunk for score, chunk in ranked[:MAX_GUIDE_CHUNKS] if float(score) > 0]
+        query = tokenize(question)
+        scores = self._guide_index.get_scores(query)
+        # A section must share at least one word with the question. Scores alone can't
+        # decide this: BM25 gives words found in every section a negative weight, so a
+        # real match in a small guide can score <= 0.
+        matching = [
+            (float(score), index)
+            for index, (score, chunk) in enumerate(zip(scores, self.guide_chunks, strict=True))
+            if set(query) & set(tokenize(chunk.text))
+        ]
+        matching.sort(key=lambda pair: (-pair[0], pair[1]))
+        return [self.guide_chunks[index] for _, index in matching[:MAX_GUIDE_CHUNKS]]
