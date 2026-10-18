@@ -116,6 +116,17 @@ def test_days_are_sorted_by_date() -> None:
     assert [d.day.isoformat() for d in forecast.days] == ["2026-10-18", "2026-10-20"]
 
 
+def test_hour_with_null_preciptype_is_kept() -> None:
+    hours = [make_hour(h) for h in range(24)]
+    hours[3] = make_hour(3, preciptype=None)
+
+    forecast = parse_forecast(make_response(make_day("2026-10-18", hours=hours)))
+
+    assert len(forecast.days[0].hours) == 24
+    assert forecast.days[0].hours[3].preciptype == []
+    assert forecast.warnings == []
+
+
 @pytest.mark.parametrize(
     "raw",
     [
