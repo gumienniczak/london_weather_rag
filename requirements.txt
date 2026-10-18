@@ -1,5 +1,5 @@
 streamlit
-httpx
+requests
 pydantic
 python-dotenv
 rank-bm25

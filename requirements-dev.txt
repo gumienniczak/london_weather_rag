@@ -3,4 +3,5 @@ pytest
 mypy
 ruff
 pre-commit
-respx
+responses
+types-requests
