@@ -23,6 +23,8 @@ class HourForecast(BaseModel):
     precip: float | None = None
     windspeed: float | None = None
     windgust: float | None = None
+    uvindex: float | None = None
+    preciptype: list[str] = Field(default_factory=list)
     conditions: str | None = None
 
 
@@ -64,6 +66,11 @@ class DayForecast(BaseModel):
         if isinstance(value, str) and "T" in value:
             return value.split("T", 1)[1]
         return value
+
+    @field_validator("preciptype", mode="before")
+    @classmethod
+    def _none_to_empty_list(cls, value: object) -> object:
+        return [] if value is None else value
 
 
 class WeatherAlert(BaseModel):
