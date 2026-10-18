@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest
+mypy
+ruff
+pre-commit
+respx

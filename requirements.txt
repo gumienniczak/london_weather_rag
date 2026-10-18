@@ -1,0 +1,7 @@
+streamlit
+httpx
+pydantic
+python-dotenv
+rank-bm25
+pandas
+altair
