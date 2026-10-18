@@ -42,6 +42,7 @@ def test_grounded_answer_is_returned_with_its_sources(retriever: Retriever) -> N
     assert result.status == "answered"
     assert result.answer is not None and "80%" in result.answer
     assert [c.id for c in result.sources] == [THURSDAY_EVENING]
+    assert [c.id for c in result.considered if c.kind == "forecast"] == [THURSDAY_EVENING]
 
 
 def test_out_of_range_question_never_calls_the_model(retriever: Retriever) -> None:
