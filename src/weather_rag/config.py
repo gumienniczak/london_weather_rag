@@ -46,3 +46,15 @@ def get_llm_timeout() -> float:
     except ValueError:
         return DEFAULT_LLM_TIMEOUT_SECONDS
     return value if value > 0 else DEFAULT_LLM_TIMEOUT_SECONDS
+
+
+DEFAULT_CACHE_TTL_MINUTES = 30
+
+
+def get_cache_ttl_minutes() -> int:
+    """How long a fetched forecast is reused before calling the weather API again."""
+    try:
+        value = int(os.getenv("CACHE_TTL_MINUTES", ""))
+    except ValueError:
+        return DEFAULT_CACHE_TTL_MINUTES
+    return value if value > 0 else DEFAULT_CACHE_TTL_MINUTES
