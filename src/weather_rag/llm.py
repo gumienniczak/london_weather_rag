@@ -70,6 +70,7 @@ class OllamaProvider:
             ],
             "format": schema,  # constrains the reply to our JSON schema
             "stream": False,
+            "think": False,
             "options": {"temperature": 0},  # repeatable answers for the same data
         }
         try:

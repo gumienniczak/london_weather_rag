@@ -33,6 +33,7 @@ def test_sends_chat_request_and_returns_content() -> None:
     assert body["model"] == "gemma4:12b"
     assert body["format"] == SCHEMA
     assert body["stream"] is False
+    assert body["think"] is False
     assert body["options"]["temperature"] == 0
     assert [m["role"] for m in body["messages"]] == ["system", "user"]
 
