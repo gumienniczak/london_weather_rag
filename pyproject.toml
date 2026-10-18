@@ -23,8 +23,9 @@ select = ["E", "F", "I", "B", "UP", "SIM"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
+plugins = ["pydantic.mypy"]
 ignore_missing_imports = true
-files = ["src", "tests", "app.py"]
+files = ["src", "tests", "scripts", "app.py"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
