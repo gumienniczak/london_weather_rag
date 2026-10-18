@@ -62,6 +62,15 @@ class QueryScope(BaseModel):
     hours: list[int] = []
     far_future: bool = False
 
+    def describe(self) -> str:
+        """Readable summary for the answer trace, e.g. ``Thu 22 Oct · evening · 18:00``."""
+        pieces = [f"{d:%a %d %b}" for d in self.days]
+        pieces += [part.value for part in self.parts]
+        pieces += [f"{h:02d}:00" for h in self.hours]
+        if self.far_future:
+            pieces.append("beyond the forecast")
+        return " · ".join(pieces) or "no specific day or time"
+
 
 class RetrievalResult(BaseModel):
     """Chunks to ground an answer in, plus a note when part of the question can't be."""
@@ -71,6 +80,7 @@ class RetrievalResult(BaseModel):
     chunks: list[Chunk]
     answerable: bool
     note: str | None = None
+    scope: QueryScope | None = None
 
 
 def tokenize(text: str) -> list[str]:
@@ -214,6 +224,7 @@ class Retriever:
                 chunks=[],
                 answerable=False,
                 note=f"There is no forecast data for {what}. {self.coverage()}",
+                scope=scope,
             )
 
         candidates = self._select(scope, in_range)
@@ -227,7 +238,10 @@ class Retriever:
             listed = ", ".join(f"{d:%a %d %b}" for d in missing)
             note = f"No forecast data for {listed}. {self.coverage()}"
         return RetrievalResult(
-            chunks=candidates + self._matching_guides(question), answerable=True, note=note
+            chunks=candidates + self._matching_guides(question),
+            answerable=True,
+            note=note,
+            scope=scope,
         )
 
     def _select(self, scope: QueryScope, days: list[date]) -> list[Chunk]:
