@@ -71,6 +71,9 @@ class AnswerResult(BaseModel):
       - ``fallback``: the model failed or was rejected; ``reason`` says why and
         ``sources`` holds the retrieved chunks to show instead.
 
+    ``considered`` is everything the model was shown (answered and fallback), so the UI
+    can show what was looked at as well as what was cited.
+
     ``trace`` records every step taken and check made, in order, for any status.
     """
 
@@ -81,6 +84,7 @@ class AnswerResult(BaseModel):
     sources: list[Chunk] = Field(default_factory=list)
     note: str | None = None
     reason: str | None = None
+    considered: list[Chunk] = Field(default_factory=list)
     trace: list[TraceStep] = Field(default_factory=list)
 
 
@@ -183,7 +187,12 @@ def answer_question(question: str, retriever: Retriever, provider: LLMProvider) 
     def fallback(reason: str) -> AnswerResult:
         trace.fail(f"{reason} → showing the forecast data instead")
         return AnswerResult(
-            status="fallback", sources=chunks, reason=reason, note=note, trace=trace.steps
+            status="fallback",
+            sources=chunks,
+            considered=chunks,
+            reason=reason,
+            note=note,
+            trace=trace.steps,
         )
 
     question = question.strip()
@@ -250,5 +259,10 @@ def answer_question(question: str, retriever: Retriever, provider: LLMProvider) 
     )
 
     return AnswerResult(
-        status="answered", answer=reply.answer.strip(), sources=cited, note=note, trace=trace.steps
+        status="answered",
+        answer=reply.answer.strip(),
+        sources=cited,
+        considered=chunks,
+        note=note,
+        trace=trace.steps,
     )
