@@ -125,7 +125,7 @@ All settings come from environment variables (see `.env.example`). Nothing secre
 ### Tests and checks
 
 ```bash
-python -m pytest             # 110 tests: no network, no API key, no model needed
+python -m pytest             # 111 tests: no network, no API key, no model needed
 ruff check . && ruff format --check .
 python -m mypy               # strict
 pre-commit run --all-files   # includes gitleaks secret scanning
