@@ -9,11 +9,11 @@ The forecast view never depends on the LLM. If the model is unavailable, slow or
 
 ## Screenshots
 
-![Outing score by day, worked out directly from the forecast with no AI](docs/outing-chart.png)
+![Outing score by day, worked out directly from the forecast with no AI](docs/outing_chart.png)
 
-![A question answered by the model, citing the forecast period it used](docs/ask-answer.png)
+![A question answered by the model, citing the forecast period it used](docs/ask_answer.png)
 
-![The checks every answer passes before it is shown](docs/answer-trace.png)
+![The checks every answer passes before it is shown](docs/answer_trace.png)
 
 ---
 
