@@ -1,0 +1,30 @@
+# Secrets: never copied into the image
+.env
+*.env
+!.env.example
+
+# Local environments, tooling and VCS
+.venv/
+venv/
+.git/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+
+.DS_Store
+
+# Model weights: never part of the image (models are served by Ollama)
+*.gguf
+*.safetensors
+models/
+
+# Not needed at run time
+tests/
+scripts/
+docs/
+*.md
+!corpus/*.md
