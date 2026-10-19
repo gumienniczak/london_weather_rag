@@ -21,7 +21,7 @@ def get_weather_api_key() -> str:
 
 DEFAULT_OLLAMA_HOST = "http://localhost:11434"
 DEFAULT_OLLAMA_MODEL = "gemma4:12b"
-DEFAULT_LLM_TIMEOUT_SECONDS = 30.0
+DEFAULT_LLM_TIMEOUT_SECONDS = 120.0
 
 
 def get_ollama_host() -> str:

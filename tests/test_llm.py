@@ -5,6 +5,7 @@ import pytest
 import requests
 import responses
 
+from weather_rag.config import DEFAULT_LLM_TIMEOUT_SECONDS
 from weather_rag.llm import (
     FakeProvider,
     LLMResponseError,
@@ -108,4 +109,4 @@ def test_get_provider_reads_environment(monkeypatch: pytest.MonkeyPatch) -> None
     assert isinstance(provider, OllamaProvider)
     assert provider.host == "https://ollama.com"
     assert provider.model == "gemma4:cloud"
-    assert provider.timeout == 30.0
+    assert provider.timeout == DEFAULT_LLM_TIMEOUT_SECONDS

@@ -31,8 +31,12 @@ Without a working model the app still runs fully: forecast, charts, and Q&A fall
 
 ```bash
 git clone https://github.com/gumienniczak/london_weather_rag.git && cd london_weather_rag
-bash setup.sh                  # creates .venv, installs everything, copies .env.example to .env
-# edit .env and set VISUAL_CROSSING_API_KEY
+bash setup.sh                  # creates .venv, installs everything, and creates .env from .env.example
+```
+
+Open the new `.env` file and paste your Visual Crossing key after `VISUAL_CROSSING_API_KEY=`. The other settings already have working defaults (a local `gemma4:12b`; see [Choosing the model](#choosing-the-model-local-vs-api) to use the cloud instead).
+
+```bash
 source .venv/bin/activate
 streamlit run app.py
 ```
@@ -41,16 +45,23 @@ Then open http://localhost:8501.
 
 ### Run with Docker
 
-Keys are passed at run time, never built into the image.
+Keys are passed at run time, never built into the image. From the cloned folder:
 
 ```bash
-cp .env.example .env           # then set VISUAL_CROSSING_API_KEY
+cp -n .env.example .env        # creates .env, or keeps yours if it already exists
+```
+
+Open `.env` and paste your Visual Crossing key after `VISUAL_CROSSING_API_KEY=`.
+
+```bash
 docker build -t london-weather .
 docker run --rm -p 8501:8501 --env-file .env \
   -e OLLAMA_HOST=http://host.docker.internal:11434 \
   --add-host=host.docker.internal:host-gateway \
   london-weather
 ```
+
+The `OLLAMA_HOST` line points the container at Ollama on your machine (local model, or cloud via `ollama signin`). To call the Ollama API directly instead, leave out both the `-e OLLAMA_HOST=…` and `--add-host=…` lines so the `OLLAMA_HOST=https://ollama.com` in your `.env` is used.
 
 Then open http://localhost:8501.
 
@@ -64,7 +75,9 @@ The same code (`OllamaProvider`) runs all three setups; only `.env` changes.
 | **Cloud via local Ollama** | `ollama signin`, then `OLLAMA_MODEL=gemma4:cloud`                               | ~0.5 s        |
 | **Cloud API, no install**  | `OLLAMA_HOST=https://ollama.com`, `OLLAMA_MODEL=gemma4:31b`, `OLLAMA_API_KEY=…` | ~0.8 s        |
 
-\*One question, measured on my Mac. On a slower machine, use a smaller local model (`gemma4:e4b`) or raise `LLM_TIMEOUT_SECONDS`.
+\*One question, measured on my Mac. On a slower machine, use a smaller local model (gemma4:e4b) or adjust LLM_TIMEOUT_SECONDS.
+
+Both cloud setups need a free [ollama.com](https://ollama.com) account. For **cloud via local Ollama**, install Ollama and run `ollama signin` once; the app needs no key. For **cloud API, no install**, create a key at ollama.com/settings/keys and put it in `.env` as `OLLAMA_API_KEY`.
 
 Try a question from the command line, without the UI:
 
@@ -82,7 +95,7 @@ All settings come from environment variables (see `.env.example`). Nothing secre
 | `OLLAMA_HOST`             | `http://localhost:11434` | Ollama server (local or `https://ollama.com`)      |
 | `OLLAMA_MODEL`            | `gemma4:12b`             | Model tag                                          |
 | `OLLAMA_API_KEY`          | (empty)                  | Only for calling ollama.com directly               |
-| `LLM_TIMEOUT_SECONDS`     | `30`                     | After this, the answer falls back to forecast data |
+| `LLM_TIMEOUT_SECONDS`     | `120`                    | After this, the answer falls back to forecast data |
 | `CACHE_TTL_MINUTES`       | `30`                     | How long a fetched forecast is reused              |
 
 ### Tests and checks

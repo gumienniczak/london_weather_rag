@@ -49,7 +49,11 @@ class OllamaProvider:
     """Calls an Ollama server (local or ollama.com) through its ``/api/chat`` endpoint."""
 
     def __init__(
-        self, host: str, model: str, api_key: str | None = None, timeout: float = 30.0
+        self,
+        host: str,
+        model: str,
+        api_key: str | None = None,
+        timeout: float = config.DEFAULT_LLM_TIMEOUT_SECONDS,
     ) -> None:
         self.host = host.rstrip("/")
         self.model = model
