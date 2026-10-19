@@ -24,6 +24,7 @@ from weather_rag.units import UnitSystem, temperature, temperature_unit, wind, w
 BLUE = "#2a78d6"
 ORANGE = "#eb6834"
 GREEN = "#008300"
+LIGHT_GREEN = "#9ccf9c"
 VIOLET = "#6250d6"
 RAIN_RAMP = ["#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"]
 
@@ -136,16 +137,25 @@ def outing_chart(
     The score is always computed in source units; only the tooltip values are converted.
     """
     t_unit, w_unit = temperature_unit(system), wind_unit(system)
+
+    best = best_day(scores)
+
     shown = scores.assign(
+        rank=["Best" if day == best else "Other" for day in scores["day"]],
         gust=[None if pd.isna(g) else wind(g, system) for g in scores["gust"]],
         feels=[None if pd.isna(f) else temperature(f, system) for f in scores["feels"]],
     )
     chart: alt.Chart = (
         alt.Chart(shown, title=f"How good is each {part.value} for being outside?")
-        .mark_bar(color=GREEN, cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
+        .mark_bar(cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
         .encode(
             x=alt.X("day:O", title=None, sort=_day_order(scores), axis=alt.Axis(labelAngle=0)),
             y=alt.Y("score:Q", title="Score (0-100)", scale=alt.Scale(domain=[0, 100])),
+            color=alt.Color(
+                "rank:N",
+                scale=alt.Scale(domain=["Best", "Other"], range=[GREEN, LIGHT_GREEN]),
+                legend=None,
+            ),
             tooltip=[
                 alt.Tooltip("day:N", title="Day"),
                 alt.Tooltip("score:Q", title="Score"),

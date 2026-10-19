@@ -101,3 +101,13 @@ def test_outing_tooltip_uses_display_units_but_score_does_not_change() -> None:
     row = next(iter(us["datasets"].values()))[0]
     assert row["feels"] == pytest.approx(50.0)  # 10°C shown as °F
     assert row["score"] == scores["score"].iloc[0]  # score unchanged by units
+
+
+def test_outing_chart_highlights_only_the_best_day() -> None:
+    wet_monday = {(1, h): {"precipprob": 90.0} for h in range(17, 22)}
+    scores = outing_scores(make_forecast(days=3, hour_overrides=wet_monday), DayPart.EVENING)
+    chart = spec(outing_chart(scores, DayPart.EVENING))
+
+    rows = next(iter(chart["datasets"].values()))
+    assert [r["rank"] for r in rows] == ["Best", "Other", "Other"]  # Sun wins the tie with Tue
+    assert chart["encoding"]["color"]["legend"] is None
