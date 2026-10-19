@@ -198,7 +198,7 @@ with plan_tab:
     st.altair_chart(rain_heatmap(forecast), width="stretch")
     st.caption("Each square is one hour. Find a light patch to stay dry.")
 
-    st.markdown("**How good is each day for being outside?**")
+    st.markdown("**Which day is the best for being outside?**")
 
     part = st.radio(
         "Part of the day",
