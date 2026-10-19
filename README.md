@@ -23,18 +23,31 @@ The forecast view never depends on the LLM. If the model is unavailable, slow or
 
 ## Quick start
 
-Requirements: Python 3.11+, a free [Visual Crossing](https://www.visualcrossing.com/) API key, and [Ollama](https://ollama.com/) for AI answers (optional, see below).
-
-Without a working model the app still runs fully: forecast, charts, and Q&A fall back to showing the retrieved forecast data.
+**You need:** Python 3.11+ and a free [Visual Crossing](https://www.visualcrossing.com/) API key.
+**For AI answers (optional):** [Ollama](https://ollama.com/), or a free ollama.com account. Without a model the app still works fully: forecast, charts, and Q&A fall back to showing the retrieved forecast data.
 
 ### Run locally
 
+**1. Clone and install**
+
 ```bash
 git clone https://github.com/gumienniczak/london_weather_rag.git && cd london_weather_rag
-bash setup.sh                  # creates .venv, installs everything, and creates .env from .env.example
+bash setup.sh        # creates .venv, installs dependencies, creates .env from .env.example
 ```
 
-Open the new `.env` file and paste your Visual Crossing key after `VISUAL_CROSSING_API_KEY=`. The other settings already have working defaults (a local `gemma4:12b`; see [Choosing the model](#choosing-the-model-local-vs-api) to use the cloud instead).
+**2. Add your weather key.** Open `.env` and paste your key after `VISUAL_CROSSING_API_KEY=`.
+
+**3. Pick a model** (edit the same `.env`; skip this to use the default local model):
+
+| Option                        | What to do first                                                    | Set in `.env`                                                                            |
+| ----------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Local model (default)         | Install Ollama, then `ollama pull gemma4:12b`                       | nothing, already set                                                                     |
+| Cloud model via Ollama        | Install Ollama, then `ollama signin` and `ollama pull gemma4:cloud` | `OLLAMA_MODEL=gemma4:cloud`                                                              |
+| Ollama API, nothing installed | Create a key at ollama.com/settings/keys                            | `OLLAMA_HOST=https://ollama.com`, `OLLAMA_MODEL=gemma4:31b`, `OLLAMA_API_KEY=<your key>` |
+
+Ollama must be running (the desktop app, or `ollama serve`) for the first two options.
+
+**4. Run**
 
 ```bash
 source .venv/bin/activate
@@ -47,21 +60,32 @@ Then open http://localhost:8501.
 
 Keys are passed at run time, never built into the image. From the cloned folder:
 
+**1.** Create `.env` and add your keys (steps 2–3 above):
+
 ```bash
-cp -n .env.example .env        # creates .env, or keeps yours if it already exists
+cp -n .env.example .env        # keeps your .env if it already exists
 ```
 
-Open `.env` and paste your Visual Crossing key after `VISUAL_CROSSING_API_KEY=`.
+**2.** Build and run:
 
 ```bash
 docker build -t london-weather .
+```
+
+If you use **Ollama on your machine** (local or cloud model):
+
+```bash
 docker run --rm -p 8501:8501 --env-file .env \
   -e OLLAMA_HOST=http://host.docker.internal:11434 \
   --add-host=host.docker.internal:host-gateway \
   london-weather
 ```
 
-The `OLLAMA_HOST` line points the container at Ollama on your machine (local model, or cloud via `ollama signin`). To call the Ollama API directly instead, leave out both the `-e OLLAMA_HOST=…` and `--add-host=…` lines so the `OLLAMA_HOST=https://ollama.com` in your `.env` is used.
+If you use **the Ollama API directly**:
+
+```bash
+docker run --rm -p 8501:8501 --env-file .env london-weather
+```
 
 Then open http://localhost:8501.
 
