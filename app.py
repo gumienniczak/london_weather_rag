@@ -25,7 +25,7 @@ from weather_rag.fetch import fetch_forecast
 from weather_rag.llm import LLMProvider, get_provider
 from weather_rag.parse import DayForecast, Forecast, parse_forecast
 from weather_rag.retrieve import Retriever
-from weather_rag.units import UnitSystem, temperature, temperature_unit
+from weather_rag.units import UnitSystem, temperature, temperature_unit, wind, wind_unit
 
 GUIDE_PATH = Path(__file__).parent / "corpus" / "what_to_wear.md"
 EXAMPLE_QUESTIONS = [
@@ -90,6 +90,10 @@ def ask(
 
 def fmt_temp(celsius: float, units: UnitSystem) -> str:
     return f"{temperature(celsius, units):.0f}{temperature_unit(units)}"
+
+
+def fmt_wind(mph: float, units: UnitSystem) -> str:
+    return f"{wind(mph, units):.0f} {wind_unit(units)}"
 
 
 def day_card(day: DayForecast, units: UnitSystem) -> None:
@@ -202,12 +206,11 @@ with plan_tab:
         horizontal=True,
     )
     scores = outing_scores(forecast, part)
-    st.altair_chart(outing_chart(scores, part), width="stretch")
+    st.altair_chart(outing_chart(scores, part, units), width="stretch")
     if best := best_day(scores):
         st.caption(
-            f"Best {part.value}: **{best}**. Calculated directly from the forecast, no AI: "
-            "rain chance, gusts above 15 mph and distance from a comfortable 15 °C feels-like "
-            "each lower the score."
+            f"rain chance, gusts above {fmt_wind(15, units)} and distance from a comfortable "
+            f"{fmt_temp(15, units)} feels-like each lower the score."
         )
 
     st.altair_chart(temperature_chart(forecast, units), width="stretch")

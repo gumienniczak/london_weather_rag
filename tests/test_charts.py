@@ -86,3 +86,18 @@ def test_temperature_chart_uses_two_panels_not_two_axes() -> None:
     assert len(panels) == 2
     assert panels[0]["title"] == "Temperature (°F)"
     assert panels[1]["title"] == "Wind gusts (mph)"
+
+
+def test_outing_tooltip_uses_display_units_but_score_does_not_change() -> None:
+    scores = outing_scores(make_forecast(days=1), DayPart.MORNING)
+    us = spec(outing_chart(scores, DayPart.MORNING, UnitSystem.US))
+    metric = spec(outing_chart(scores, DayPart.MORNING, UnitSystem.METRIC))
+
+    titles = {t["field"]: t["title"] for t in us["encoding"]["tooltip"]}
+    assert titles["feels"] == "Average feels-like (°F)"
+    assert {t["field"]: t["title"] for t in metric["encoding"]["tooltip"]}["gust"] == (
+        "Strongest gust (km/h)"
+    )
+    row = next(iter(us["datasets"].values()))[0]
+    assert row["feels"] == pytest.approx(50.0)  # 10°C shown as °F
+    assert row["score"] == scores["score"].iloc[0]  # score unchanged by units

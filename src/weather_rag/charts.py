@@ -128,10 +128,20 @@ def rain_heatmap(forecast: Forecast) -> alt.Chart:
     return chart
 
 
-def outing_chart(scores: pd.DataFrame, part: DayPart) -> alt.Chart:
-    """One bar per day: how good ``part`` looks for being outside (0-100)."""
+def outing_chart(
+    scores: pd.DataFrame, part: DayPart, system: UnitSystem = UnitSystem.UK
+) -> alt.Chart:
+    """One bar per day: how good ``part`` looks for being outside (0-100).
+
+    The score is always computed in source units; only the tooltip values are converted.
+    """
+    t_unit, w_unit = temperature_unit(system), wind_unit(system)
+    shown = scores.assign(
+        gust=[None if pd.isna(g) else wind(g, system) for g in scores["gust"]],
+        feels=[None if pd.isna(f) else temperature(f, system) for f in scores["feels"]],
+    )
     chart: alt.Chart = (
-        alt.Chart(scores, title=f"How good is each {part.value} for being outside?")
+        alt.Chart(shown, title=f"How good is each {part.value} for being outside?")
         .mark_bar(color=GREEN, cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
         .encode(
             x=alt.X("day:O", title=None, sort=_day_order(scores), axis=alt.Axis(labelAngle=0)),
@@ -140,8 +150,8 @@ def outing_chart(scores: pd.DataFrame, part: DayPart) -> alt.Chart:
                 alt.Tooltip("day:N", title="Day"),
                 alt.Tooltip("score:Q", title="Score"),
                 alt.Tooltip("rain:Q", title="Highest rain chance (%)", format=".0f"),
-                alt.Tooltip("gust:Q", title="Strongest gust (mph)", format=".0f"),
-                alt.Tooltip("feels:Q", title="Average feels-like (°C)", format=".1f"),
+                alt.Tooltip("gust:Q", title=f"Strongest gust ({w_unit})", format=".0f"),
+                alt.Tooltip("feels:Q", title=f"Average feels-like ({t_unit})", format=".1f"),
             ],
         )
         .properties(height=260)
