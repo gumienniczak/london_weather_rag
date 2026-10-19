@@ -95,7 +95,7 @@ def fmt_temp(celsius: float, units: UnitSystem) -> str:
 def day_card(day: DayForecast, units: UnitSystem) -> None:
     with st.container(border=True):
         st.markdown(f"**{day.day:%a}** {day.day.day} {day.day:%b}")
-        st.markdown(f"## {ICONS.get(day.icon or '', '🌡️')}")
+        st.subheader(ICONS.get(day.icon or "", "🌡️"), anchor=False)
         st.markdown(f"**{fmt_temp(day.tempmax, units)}** / {fmt_temp(day.tempmin, units)}")
         st.caption(day.conditions)
         if day.precipprob is not None:
@@ -158,7 +158,7 @@ with st.sidebar:
     st.caption("Weather data: Visual Crossing")
     st.caption(f"Forecast reused for {config.get_cache_ttl_minutes()} min between fetches")
 
-st.title("London · the next 7 days")
+st.title("London · the next 7 days", anchor=False)
 
 try:
     with st.spinner("Fetching the forecast…"):

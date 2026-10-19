@@ -23,6 +23,7 @@ from weather_rag.units import UnitSystem, temperature, temperature_unit, wind, w
 # Colours (validated categorical slots and a single-hue sequential ramp).
 BLUE = "#2a78d6"
 ORANGE = "#eb6834"
+GREEN = "#008300"
 VIOLET = "#6250d6"
 RAIN_RAMP = ["#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"]
 
@@ -131,7 +132,7 @@ def outing_chart(scores: pd.DataFrame, part: DayPart) -> alt.Chart:
     """One bar per day: how good ``part`` looks for being outside (0-100)."""
     chart: alt.Chart = (
         alt.Chart(scores, title=f"How good is each {part.value} for being outside?")
-        .mark_bar(color=BLUE, cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
+        .mark_bar(color=GREEN, cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
         .encode(
             x=alt.X("day:O", title=None, sort=_day_order(scores), axis=alt.Axis(labelAngle=0)),
             y=alt.Y("score:Q", title="Score (0-100)", scale=alt.Scale(domain=[0, 100])),
