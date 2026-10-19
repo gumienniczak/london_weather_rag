@@ -154,3 +154,16 @@ def test_uninformative_question_falls_back_to_soonest_periods(retriever: Retriev
     result = retriever.retrieve("What's the weather like?")
 
     assert ids(result.chunks) == ids(retriever.forecast_chunks[:8])
+
+
+def test_single_section_guide_still_matches() -> None:
+    guides = guide_chunks("## Rain\nTake a waterproof.\n", source="wear")
+    result = Retriever(forecast_chunks(make_forecast()), guides).retrieve("Need a waterproof?")
+
+    assert "wear-rain" in ids(result.chunks)
+
+
+def test_guide_without_shared_words_is_not_added(retriever: Retriever) -> None:
+    result = retriever.retrieve("Thursday evening?")
+
+    assert [c for c in result.chunks if c.kind == "guide"] == []
