@@ -9,7 +9,11 @@ The forecast view never depends on the LLM. If the model is unavailable, slow or
 
 ## Screenshots
 
+### Plan your week
+
 ![Outing score by day, worked out directly from the forecast with no AI](docs/outing_chart.png)
+
+### Ask the forecast
 
 ![A question answered by the model, citing the forecast period it used](docs/ask_answer.png)
 
