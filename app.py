@@ -192,6 +192,7 @@ plan_tab, ask_tab = st.tabs(["📅 Plan your week", "💬 Ask the forecast"])
 
 with plan_tab:
     st.altair_chart(rain_heatmap(forecast), width="stretch")
+    st.caption("Each square is one hour. Find a light patch to stay dry.")
 
     part = st.radio(
         "Part of the day",

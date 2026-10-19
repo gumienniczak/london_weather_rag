@@ -106,7 +106,7 @@ def rain_heatmap(forecast: Forecast) -> alt.Chart:
     """Days (rows) x hours (columns), darker = higher chance of rain."""
     frame = hourly_frame(forecast)
     chart: alt.Chart = (
-        alt.Chart(frame, title="Chance of rain by hour")
+        alt.Chart(frame, title="Chance of rain by hour (darker = more likely)")
         .mark_rect(stroke="white", strokeWidth=2, cornerRadius=2)
         .encode(
             x=alt.X("hour:O", title="Hour of day", axis=alt.Axis(labelAngle=0)),
