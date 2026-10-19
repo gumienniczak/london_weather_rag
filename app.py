@@ -198,6 +198,8 @@ with plan_tab:
     st.altair_chart(rain_heatmap(forecast), width="stretch")
     st.caption("Each square is one hour. Find a light patch to stay dry.")
 
+    st.markdown("**How good is each day for being outside?**")
+
     part = st.radio(
         "Part of the day",
         OUTING_PARTS,
@@ -209,6 +211,7 @@ with plan_tab:
     st.altair_chart(outing_chart(scores, part, units), width="stretch")
     if best := best_day(scores):
         st.caption(
+            f"Best {part.value}: **{best}**. Calculated directly from the forecast, no AI: "
             f"rain chance, gusts above {fmt_wind(15, units)} and distance from a comfortable "
             f"{fmt_temp(15, units)} feels-like each lower the score."
         )

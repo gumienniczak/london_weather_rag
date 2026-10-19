@@ -134,7 +134,8 @@ def outing_chart(
 ) -> alt.Chart:
     """One bar per day: how good ``part`` looks for being outside (0-100).
 
-    The score is always computed in source units; only the tooltip values are converted.
+    Untitled: the app shows the title above its part-of-day selector. The score is always
+    computed in source units; only the tooltip values are converted.
     """
     t_unit, w_unit = temperature_unit(system), wind_unit(system)
 
@@ -146,7 +147,7 @@ def outing_chart(
         feels=[None if pd.isna(f) else temperature(f, system) for f in scores["feels"]],
     )
     chart: alt.Chart = (
-        alt.Chart(shown, title=f"How good is each {part.value} for being outside?")
+        alt.Chart(shown)
         .mark_bar(cornerRadiusTopLeft=4, cornerRadiusTopRight=4)
         .encode(
             x=alt.X("day:O", title=None, sort=_day_order(scores), axis=alt.Axis(labelAngle=0)),
@@ -188,7 +189,7 @@ def temperature_chart(forecast: Forecast, system: UnitSystem = UnitSystem.UK) ->
                 "series:N",
                 title=None,
                 scale=alt.Scale(domain=["Actual", "Feels like"], range=[BLUE, ORANGE]),
-                legend=alt.Legend(orient="top"),
+                legend=alt.Legend(orient="bottom"),
             ),
             tooltip=[
                 alt.Tooltip("time:T", title="Time", format="%a %d %b, %H:%M"),
@@ -211,5 +212,7 @@ def temperature_chart(forecast: Forecast, system: UnitSystem = UnitSystem.UK) ->
         )
         .properties(height=140)
     )
-    combined: alt.VConcatChart = alt.vconcat(temps, gusts).resolve_scale(x="shared")
+    combined: alt.VConcatChart = (
+        alt.vconcat(temps, gusts).resolve_scale(x="shared").resolve_legend(color="independent")
+    )
     return combined
